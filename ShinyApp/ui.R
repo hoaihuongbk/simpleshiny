@@ -9,6 +9,7 @@
 
 library(shiny)
 library(shinythemes)
+library(markdown)
 
 # Define some common variables
 variables <-

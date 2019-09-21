@@ -1,0 +1,63 @@
+---
+title: "How to use Shiny for get and show stock data"
+author: "hoaihuongbk"
+date: "9/21/2019"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Overview
+
+This is a presentation for decribe how to use Shiny for get and show stock data. Stock data which I used in this app get from Quandl API as `zoo` object and use `plot` function for show in app. For see how it work, please try here [https://hoaihuongbk.shinyapps.io/ShinyApp/](https://hoaihuongbk.shinyapps.io/ShinyApp/).
+
+### About Quandl
+Quandl is a Restful API for get many collection of free and open data collected from a variety of organizations: central banks, governments, multinational organizations and more. You can use it without payment and with few restrictions. Let's create an account and get `API Key`. For more details how using Quandl in R, read  [docs](https://docs.quandl.com/docs/r)
+
+## Step by step
+You can folow step by step below for reproduce this app.
+
+### Step 1
+Open RStudio and create new Shiny app (File -> New File -> Shiny Web App...). If you don't know how to start, please read this [tutorial](https://shiny.rstudio.com/articles/basics.html). I think it's good for start Shiny. Good luck !
+
+### Step 2
+For UI side (`ui.R` file), I define two input:
+
+- Checkbox for select stock symbol: Apple, Facebook, Netflix and Google. You can add more symbol
+- Date range: start date and end date. I limit max date to `2018-04-01` because the data I used in this app is limit to this date.
+
+## Step by step (cont.)
+### Step 3
+For Server side (`server.R` file):
+
+- Get data from Quandl API by stock symbol codes, start date, end date. I collapse data daily and set response type is `zoo`.
+```
+Quandl(query_codes, collapse = "daily", start_date = from_date, end_date = to_date, type = "zoo")
+```
+- Plot data
+```
+plot(data(), screens = 1, xlab = "Time", ylab = "Open Price ($)", col = cols(), lwd = 3)
+legend("topleft", inset = c(0, 0), y.intersp = 1, legend = input$symbols, lty = 1,
+      bty = "n", col = cols())
+```
+
+## Step by step (cont.)
+### Step 4
+For reactive data, you can wrap get data inside `reactive` function
+```
+data <- reactive({
+    data <- getData(input$symbols, input$daterange[1], input$daterange[2])
+  })
+```
+
+### Step 5
+For show plot in UI, I put plot data (figure) in a tab and another tab for summary data
+```
+tabPanel("Plot", plotOutput("distPlot")),
+tabPanel("Summary", verbatimTextOutput("summary"))
+```
+
+## Thank you
+The code is published on [Github](https://github.com/hoaihuongbk/simpleshiny), you can clone and try in your local. If you have any question or idea, please contact me via email [hoaihuongvuonghuynh@gmail.com](mailto:hoaihuongvuonghuynh@gmail.com). Thanks !
